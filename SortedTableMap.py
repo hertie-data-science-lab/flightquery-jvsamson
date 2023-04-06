@@ -97,6 +97,20 @@ class SortedTableMap(MapBase):
         else:
             return None
         return item._key, item._value
+    
+    def find_range(self, start, stop):
+        '''
+        Iterate all (key,value) pairs such that start <= key < stop.
+        If start is None, iteration begins with minimum key of map.
+        If stop is None, iteration continues through the maximum key of map.
+        '''
+        if start is None:
+            index = 0
+        else:
+            index = self._find_index(start)
+        while index < len(self._table) and (stop is None or self._table[index]._key < stop):
+            yield (self._table[index]._key, self._table[index]._value)
+            index += 1
 
 if __name__ == "__main__":
     a = SortedTableMap()

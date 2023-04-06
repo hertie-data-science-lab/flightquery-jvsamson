@@ -1,7 +1,7 @@
 from SortedTableMap import *
 
 class FlightQuery(SortedTableMap):
-    '''An application of SortedTableMap, used to query tickets of expeted period'''
+    '''A class used to query tickets for a flexible departure date period'''
     class Key:
         __slots__ = "_origin", "_dest", "_date", "_time"
         pass
