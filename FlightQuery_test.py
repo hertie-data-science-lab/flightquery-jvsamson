@@ -1,68 +1,61 @@
-from SortedTableMap import *
+from SortedTableMap import SortedTableMap
 
 class FlightQuery(SortedTableMap):
-    '''An application of SortedTableMap, used to query tickets of expected period'''
     class Key:
-        '''Represents a key used to store flights in the FlightQuery object'''
-        __slots__ = "_origin", "_dest", "_date", "_time"
-        def __init__(self, origin, dest, date, time):
-            '''Initializes a Key object with the specified origin, destination, date, and time'''
-            self._origin = origin
-            self._dest = dest
-            self._date = date
-            self._time = time
+        def __init__(self, origin, destination, date, time):
+            self.origin = origin
+            self.destination = destination
+            self.date = date
+            self.time = time
 
         def __lt__(self, other):
-            '''Compares two Key objects and returns True if self is less than other'''
-            if self._origin < other._origin:
-                return True
-            elif self._origin > other._origin:
-                return False
+            if self.origin != other.origin:
+                return self.origin < other.origin
+            elif self.destination != other.destination:
+                return self.destination < other.destination
+            elif self.date != other.date:
+                return self.date < other.date
             else:
-                if self._dest < other._dest:
-                    return True
-                elif self._dest > other._dest:
-                    return False
-                else:
-                    if self._date < other._date:
-                        return True
-                    elif self._date > other._date:
-                        return False
-                    else:
-                        if self._time < other._time:
-                            return True
-                        else:
-                            return False
-
-    class Flight:
-        '''Represents a flight object'''
-        __slots__ = "_origin", "_dest", "_date", "_time", "_flight_number", "_seats_F", "_seats_Y", "_duration", "_fare"
-        def __init__(self, origin, dest, date, time, flight_number, seats_F, seats_Y, duration, fare):
-            '''Initializes a Flight object with the specified parameters'''
-            self._origin = origin
-            self._dest = dest
-            self._date = date
-            self._time = time
-            self._flight_number = flight_number
-            self._seats_F = seats_F
-            self._seats_Y = seats_Y
-            self._duration = duration
-            self._fare = fare
+                return self.time < other.time
 
         def __str__(self):
-            '''Returns a string representation of the Flight object'''
-            return f"Flight {self._flight_number} from {self._origin} to {self._dest} on {self._date} at {self._time}"
+            return "{0}-{1}-{2}-{3}".format(self.origin, self.destination, self.date, self.time)
 
-        def query(self, origin, dest, date, time):
-            '''Returns a list of flights matching the input query within a flexible departure date'''
-            # Create keys that cover a range of possible departure times on the input date
-            keys = [self.Key(origin, dest, date, time), 
-                    self.Key(origin, dest, date, time + 100), 
-                    self.Key(origin, dest, date, time + 200)]
-            # Find the range of keys that cover the possible departure times
-            start = self._find_index(keys[0])
-            end = self._find_index(keys[-1])
-            # Filter the flights within the date range
-            flights = [flight for key, flight in self._table[start:end+1] if key._origin == origin and key._dest == dest and key._date == date]
-            return flights
-    
+    def __init__(self):
+        super().__init__()
+
+    def query(self, k1, k2):
+        result = []
+        for key in self._table:
+            if k1 < key._key < k2:
+                result.append((key._key, key._value))
+        return result
+
+# Create a FlightQuery object
+flights = FlightQuery()
+
+# Create flight key-value pairs using 'for' loop
+s = [("A", "B", 622, 1200, "No1"), ("A", "B", 622, 1230, "No2"), ("A", "B", 622, 1300, "No3"), ("A", "B", 620, 1330, "No4"), ("A", "B", 630, 1400, "No5"), ("A", "B", 624, 1430, "No6")]
+for each in s:
+    key = flights.Key(each[0], each[1], each[2], each[3])
+    value = each[4]
+    flights[key] = value
+
+# Interface for inputting user queries
+origin = input("Enter the origin airport: ")
+destination = input("Enter the destination airport: ")
+earliest_date = int(input("Enter the earliest date (in YYYYMMDD format): "))
+earliest_time = int(input("Enter the earliest time (in HHMM format): "))
+latest_date = int(input("Enter the latest date (in YYYYMMDD format): "))
+latest_time = int(input("Enter the latest time (in HHMM format): "))
+
+# Run the query and print results
+k1 = FlightQuery.Key(origin, destination, earliest_date, earliest_time)
+k2 = FlightQuery.Key(destination, origin, latest_date, latest_time)
+results = flights.query(k1, k2)
+
+if results:
+    for result in results:
+        print(result)
+else:
+    print("No flights found.")

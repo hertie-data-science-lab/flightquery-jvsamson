@@ -105,12 +105,12 @@ class SortedTableMap(MapBase):
         If stop is None, iteration continues through the maximum key of map.
         '''
         if start is None:
-            index = 0
+            j = 0
         else:
-            index = self._find_index(start)
-        while index < len(self._table) and (stop is None or self._table[index]._key < stop):
-            yield (self._table[index]._key, self._table[index]._value)
-            index += 1
+            j = self._find_index(start)  # find first result
+        while j < len(self._table) and (stop is None or (not self._table[j]._key > stop and self._table[j]._key != stop)):
+            yield (self._table[j]._key, self._table[j]._value)
+            j += 1
 
 if __name__ == "__main__":
     a = SortedTableMap()
