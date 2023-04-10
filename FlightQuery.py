@@ -103,16 +103,16 @@ print("Enter destination airport (A, B, or C):")
 destination = input().upper()
 
 print("Enter the earliest date ({0}):".format(date_range))
-earliest_date = input()
+earliest_date = int(input())
 
 print("Enter the earliest time ({0}):".format(time_range))
-earliest_time = input()
+earliest_time = int(input())
 
 print("Enter the latest date ({0}):".format(date_range))
-latest_date = input()
+latest_date = int(input())
 
 print("Enter the latest time ({0}):".format(time_range))
-latest_time = input()
+latest_time = int(input())
 
 # Run the query and print results
 k1 = FlightQuery.Key(origin, destination, earliest_date, earliest_time)
