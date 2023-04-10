@@ -2,21 +2,31 @@ from SortedTableMap import SortedTableMap
 
 class FlightQuery(SortedTableMap):
     class Key:
+
         def __init__(self, origin, destination, date, time):
             self.origin = origin
             self.destination = destination
             self.date = date
             self.time = time
-
+        
         def __lt__(self, other):
             if self.origin != other.origin:
                 return self.origin < other.origin
-            elif self.destination != other.destination:
+            if self.destination != other.destination:
                 return self.destination < other.destination
-            elif self.date != other.date:
+            if self.date != other.date:
+                if self.date is None:
+                    return False
+                if other.date is None:
+                    return True
                 return self.date < other.date
-            else:
+            if self.time != other.time:
+                if self.time is None:
+                    return False
+                if other.time is None:
+                    return True
                 return self.time < other.time
+            return False
 
         def __str__(self):
             return "{0}-{1}-{2}-{3}".format(self.origin, self.destination, self.date, self.time)
