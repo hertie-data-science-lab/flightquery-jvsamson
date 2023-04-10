@@ -33,16 +33,35 @@ class FlightQuery(SortedTableMap):
     def __init__(self):
         super().__init__()
 
-    def query(self, k1, k2, sort_by_price=False):
-        result = []
+    def query(self, origin, destination, date, time, sort_by_price=False):
+        # Find the closest flight in either direction
+        closest_before = None
+        closest_after = None
         for key in self._table:
-            if k1 < key._key < k2:
-                result.append((key._key, key._value))
+            if key.origin == origin and key.destination == destination:
+                flight_time = int(str(key.date) + str(key.time).zfill(4))
+                if flight_time < date * 100 + time:
+                    if closest_before is None or flight_time > closest_before:
+                        closest_before = flight_time
+                        before_key = key
+                elif flight_time > date * 100 + time:
+                    if closest_after is None or flight_time < closest_after:
+                        closest_after = flight_time
+                        after_key = key
+
+        # Return the closest flight(s) as a list of tuples
+        result = []
+        if closest_before:
+            result.append((before_key, self[before_key]))
+        if closest_after:
+            result.append((after_key, self[after_key]))
+
         if sort_by_price:
             result = sorted(result, key=lambda x: x[1])
         else:
             result = sorted(result, key=lambda x: (x[0].date, x[0].time))
         return result
+
 
 # Create a FlightQuery object
 flights = FlightQuery()
@@ -79,26 +98,20 @@ origin = input().upper()
 print("Enter destination airport:")
 destination = input().upper()
 
-print("Enter the earliest date ({0}):")
-earliest_date = int(input())
+print("Enter the date (in the format MM/DD/YYYY):")
+date = input()
 
-print("Enter the earliest time ({0}):")
-earliest_time = int(input())
-
-print("Enter the latest date ({0}):")
-latest_date = int(input())
-
-print("Enter the latest time ({0}):")
-latest_time = int(input())
+print("Enter the time (in the format HHMM, e.g. 1430 for 2:30 PM):")
+time = int(input())
 
 # Run the query and print results
-k1 = FlightQuery.Key(origin, destination, earliest_date, earliest_time)
-k2 = FlightQuery.Key(destination, origin, latest_date, latest_time)
-results = flights.query(k1, k2, sort_by_price)
+result = flights.query(origin, destination, date, time, sort_by_price)
 
-if results:
-    print("\nHere are the available flights:\n")
-    for result in results:
-        print("Flight from {0} to {1} on {2} at {3} with fare {4}".format(result[0].origin, result[0].destination, result[0].date, result[0].time, result[1]))
-else:
+if not result:
     print("\nNo flights found.")
+else:
+    print("\nHere are the closest flights:")
+    for r in result:
+        key = r[0]
+        value = r[1]
+        print("Flight from {0} to {1} on {2} at {3} with fare {4}".format(key.origin, key.destination, key.date, key.time, value))
