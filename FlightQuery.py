@@ -43,18 +43,6 @@ class FlightQuery(SortedTableMap):
         else:
             result = sorted(result, key=lambda x: (x[0].date, x[0].time))
         return result
-    
-    def get_available_range(self):
-        dates = sorted(set([key.date for key in self._table.keys()]))
-        if dates:
-            date_range = "{0} to {1}".format(min(dates), max(dates))
-            times = sorted(set([key.time for key in self._table.keys()]))
-            time_range = "{0} to {1}".format(min(times), max(times))
-        else:
-            date_range = "No flights available"
-            time_range = "No flights available"
-        return date_range, time_range
-
 
 # Create a FlightQuery object
 flights = FlightQuery()
@@ -66,14 +54,8 @@ for each in s:
     value = each[4]  # add the fare value to the value object
     flights[key] = value
 
-print(flights)
-
 # Interface for inputting user queries
 print("Welcome to the Flight finder program!\n")
-
-# Set the available range for flight entries
-date_range = None
-time_range = None
 
 # Ask user to select a sorting option
 print("Please select a sorting option:")
@@ -89,11 +71,6 @@ elif sort_option == "2":
 else:
     print("Invalid input. Please try again.")
     exit()
-
-# Set the available range for flight entries based on current flights
-if flights:
-    date_range = "{0} to {1}".format(min(flights, key=lambda x: x.date).date, max(flights, key=lambda x: x.date).date)
-    time_range = "{0} to {1}".format(min(flights, key=lambda x: x.time).time, max(flights, key=lambda x: x.time).time)
 
 # Ask user for flight details
 print("\nEnter the origin airport (A, B, or C):")
