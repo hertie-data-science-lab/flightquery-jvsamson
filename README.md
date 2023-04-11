@@ -4,6 +4,7 @@
 Solution by Benedikt Korbach, Niklas Pawelzik, Justus von Samson and Alvaro Guijarro
 
 Please see file FlightQuery.py
+Additional we created another version called FlightQuery_OneDate wich only takes one date as an input and findes the closest flights to that date.
 
 Task:
 There are several Web sites on the Internet that allow users to perform queries on flight databases. 

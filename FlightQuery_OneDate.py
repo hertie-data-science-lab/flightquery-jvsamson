@@ -34,19 +34,43 @@ class FlightQuery(SortedTableMap):
         super().__init__()
 
     def query(self, origin, destination, date, time, sort_by_price=False):
+        """
+        This function finds the closest flights before and after the specified date and time.
+        
+        Args:
+            origin (str): The origin airport code.
+            destination (str): The destination airport code.
+            date (str): The date in the format 'MM/DD/YYYY'.
+            time (int): The time in the format 'HHMM'.
+            sort_by_price (bool): If True, sorts the results by price; otherwise, sorts by date and time.
+            
+        Returns:
+            list: A list of tuples containing the closest flights before and after the specified date and time.
+        """
+
+        # Convert date into a comparable integer format (MMDD)
+        date = int(date.replace("/", ""))
+
+        # Convert time to a 4-digit string format
+        time_str = str(time).zfill(4)
+
         # Find the closest flight in either direction
         closest_before = None
         closest_after = None
-        for key in self._table:
+        for item in self._table:
+            key = item._key
             if key.origin == origin and key.destination == destination:
-                flight_time = int(str(key.date) + str(key.time).zfill(4))
-                if flight_time < date * 100 + time:
-                    if closest_before is None or flight_time > closest_before:
-                        closest_before = flight_time
+                # Compare date and time using tuple comparison
+                flight_date_time = (key.date, int(key.time))
+                query_date_time = (date, int(time_str))
+
+                if flight_date_time < query_date_time:
+                    if closest_before is None or flight_date_time > closest_before:
+                        closest_before = flight_date_time
                         before_key = key
-                elif flight_time > date * 100 + time:
-                    if closest_after is None or flight_time < closest_after:
-                        closest_after = flight_time
+                elif flight_date_time > query_date_time:
+                    if closest_after is None or flight_date_time < closest_after:
+                        closest_after = flight_date_time
                         after_key = key
 
         # Return the closest flight(s) as a list of tuples
@@ -61,6 +85,7 @@ class FlightQuery(SortedTableMap):
         else:
             result = sorted(result, key=lambda x: (x[0].date, x[0].time))
         return result
+
 
 
 # Create a FlightQuery object
@@ -115,3 +140,4 @@ else:
         key = r[0]
         value = r[1]
         print("Flight from {0} to {1} on {2} at {3} with fare {4}".format(key.origin, key.destination, key.date, key.time, value))
+
