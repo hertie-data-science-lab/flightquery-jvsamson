@@ -1,38 +1,54 @@
 from SortedTableMap import *
 
 class FlightQuery(SortedTableMap):
+    # class has four attributes: origin, destination, date, and time
     class Key:
+        # initializes key class with the four attributes
         def __init__(self, origin, destination, date, time):
             self.origin = origin
             self.destination = destination
             self.date = date
             self.time = time
 
+        # defines less-than comparison operator for Key class
         def __lt__(self, other):
             if self.date != other.date:
+                # date of the current Key object is None: return False
                 if self.date is None:
                     return False
+                # date of the other Key object is None: return True
                 if other.date is None:
                     return True
+                # True if date of current Key object is less than other Key
                 return self.date < other.date
+            # same points but for time attribute
             if self.time != other.time:
                 if self.time is None:
                     return False
                 if other.time is None:
                     return True
                 return self.time < other.time
+            # origin of current Key not equal to origin of other Key, then:
             if self.origin != other.origin:
+                # True if origin of current Key is less than origin of other
                 return self.origin < other.origin
+            # same for destination
             if self.destination != other.destination:
                 return self.destination < other.destination
+            # "False" if all of conditions above are False
             return False
 
+        # Returns string representing Key as "origin-destination-date-time"
         def __str__(self):
             return "{0}-{1}-{2}-{3}".format(self.origin, self.destination, self.date, self.time)
 
+    # Calls constructor of SortedTableMap class
     def __init__(self):
         super().__init__()
 
+    # Defines method that searches for flights based on query
+    # Method takes in two Key objects (k1 and k2)
+    # above and beyond: added optional sort_by_price parameter (default False)
     def query(self, k1, k2, sort_by_price=False):
         result = []
         for key in self._table:
